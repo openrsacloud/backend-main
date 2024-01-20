@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"openrsacloud/backend/database"
+	"openrsacloud/backend/db"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +23,7 @@ func NeedSession(c *fiber.Ctx) error {
 		})
 	}
 	tokenClaims := token.Claims.(jwt.MapClaims)
-	resp, err := database.DB.Select(tokenClaims["session"].(string))
+	resp, err := db.DB.Select(tokenClaims["session"].(string))
 	if err != nil {
 		c.Locals("session", nil)
 		return c.Status(401).JSON(fiber.Map{
@@ -32,7 +32,7 @@ func NeedSession(c *fiber.Ctx) error {
 			"info":    "Invalid token",
 		})
 	}
-	var sessionData database.Session
+	var sessionData db.Session
 	err = surrealdb.Unmarshal(resp, &sessionData)
 	if err != nil {
 		c.Locals("session", nil)

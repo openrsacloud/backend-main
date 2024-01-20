@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"openrsacloud/backend/database"
+	"openrsacloud/backend/db"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,7 +28,7 @@ func Login(c *fiber.Ctx) error {
 			"info":    "The username or password is empty",
 		})
 	}
-	resp, err := database.DB.Query(`
+	resp, err := db.DB.Query(`
 		SELECT * FROM users WHERE username = $username 
 		AND crypto::argon2::compare(password, $password);`,
 		map[string]interface{}{
@@ -43,7 +43,7 @@ func Login(c *fiber.Ctx) error {
 			"info":    "Failed to get user data",
 		})
 	}
-	var userData []surrealdb.RawQuery[[]map[string]interface{}]
+	var userData []surrealdb.RawQuery[[]db.User]
 	err = surrealdb.Unmarshal(resp, &userData)
 	if err != nil {
 		c.Status(500)
@@ -63,16 +63,16 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	delete(userData[0].Result[0], "password")
+	// delete(userData[0].Result[0], "password")
 
-	resp, err = database.DB.Query(`
+	resp, err = db.DB.Query(`
 		CREATE sessions SET
 		user = $user,
 		ip_address = $ip_address,
 		end = time::now() + 2w,
 		user_agent = $user_agent;`,
 		map[string]interface{}{
-			"user":       userData[0].Result[0]["id"],
+			"user":       userData[0].Result[0].Id,
 			"user_agent": c.Get("User-Agent"),
 			"ip_address": c.IP(),
 		})
@@ -84,7 +84,7 @@ func Login(c *fiber.Ctx) error {
 			"info":    "Failed to create session",
 		})
 	}
-	var sessionData []surrealdb.RawQuery[[]database.Session]
+	var sessionData []surrealdb.RawQuery[[]db.Session]
 	err = surrealdb.Unmarshal(resp, &sessionData)
 	if err != nil {
 		c.Status(500)
@@ -107,12 +107,14 @@ func Login(c *fiber.Ctx) error {
 			"info":    "Failed to sign JsonWebToken",
 		})
 	}
-	userData[0].Result[0]["token"] = signedToken
 
 	c.Status(200)
 	return c.JSON(fiber.Map{
 		"status":  200,
 		"message": "OK",
-		"data":    userData[0].Result[0],
+		"data": fiber.Map{
+			"user":  userData[0].Result[0],
+			"token": signedToken,
+		},
 	})
 }

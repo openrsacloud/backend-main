@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"os"
@@ -21,9 +21,6 @@ func Connect() {
 	}); err != nil {
 		panic(err)
 	}
-	// if _, err := db.Use("OpenRSACloud", "main"); err != nil {
-	// 	panic(err)
-	// }
 	DB = db
 }
 

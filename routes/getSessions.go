@@ -2,7 +2,7 @@ package routes
 
 import (
 	"log"
-	"openrsacloud/backend/database"
+	"openrsacloud/backend/db"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/surrealdb/surrealdb.go"
@@ -13,10 +13,10 @@ func GetSessions(c *fiber.Ctx) error {
 	if sessionData == nil {
 		return nil
 	}
-	resp, err := database.DB.Query(
+	resp, err := db.DB.Query(
 		`SELECT * FROM sessions WHERE user = $user`,
 		map[string]interface{}{
-			"user": sessionData.(database.Session).User,
+			"user": sessionData.(db.Session).User,
 		})
 	if err != nil {
 		c.Status(500)
@@ -26,7 +26,7 @@ func GetSessions(c *fiber.Ctx) error {
 			"info":    "Failed to get sessions",
 		})
 	}
-	var allUserSessions []surrealdb.RawQuery[[]database.Session]
+	var allUserSessions []surrealdb.RawQuery[[]db.Session]
 	err = surrealdb.Unmarshal(resp, &allUserSessions)
 	if err != nil {
 		log.Println(err)

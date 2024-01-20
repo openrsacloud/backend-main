@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"openrsacloud/backend/database"
+	"openrsacloud/backend/db"
 	"openrsacloud/backend/middlewares"
 	"openrsacloud/backend/routes"
 
@@ -18,8 +18,8 @@ func main() {
 		log.Println(err.Error())
 	}
 
-	database.Connect()
-	defer database.Disconnect()
+	db.Connect()
+	defer db.Disconnect()
 
 	app := fiber.New(fiber.Config{
 		Prefork:      true,
@@ -47,6 +47,7 @@ func main() {
 
 func initRoutes(r fiber.Router) {
 	auth := r.Group("/auth")
-	auth.Get("/getSessions", middlewares.NeedSession, routes.GetSessions)
 	auth.Post("/login", routes.Login)
+	auth.Get("/get_sessions", middlewares.NeedSession, routes.GetSessions)
+	auth.Get("/clear_sessions", middlewares.NeedSession, routes.ClearSessions)
 }
