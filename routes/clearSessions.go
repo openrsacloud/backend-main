@@ -12,11 +12,7 @@ func ClearSessions(c *fiber.Ctx) error {
 		"user": sessionData.User,
 	})
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to delete sessions",
-		})
+		return err
 	}
 	return c.Status(200).JSON(fiber.Map{
 		"status":  200,

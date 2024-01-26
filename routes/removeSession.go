@@ -19,11 +19,7 @@ func RemoveSession(c *fiber.Ctx) error {
 	}
 	_, err = db.DB.Delete(body["session_id"])
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to remove session",
-		})
+		return err
 	}
 	return c.Status(200).JSON(fiber.Map{
 		"status":  200,

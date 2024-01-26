@@ -13,16 +13,14 @@ func Login(c *fiber.Ctx) error {
 	var body map[string]string
 	err := c.BodyParser(&body)
 	if err != nil {
-		c.Status(400)
-		return c.JSON(fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Bad request",
 			"info":    "Failed to parse request body",
 		})
 	}
 	if body["username"] == "" || body["password"] == "" {
-		c.Status(400)
-		return c.JSON(fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Bad request",
 			"info":    "The username or password is empty",
@@ -36,27 +34,16 @@ func Login(c *fiber.Ctx) error {
 			"password": body["password"],
 		})
 	if err != nil {
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to get user data",
-		})
+		return err
 	}
 	var userData []surrealdb.RawQuery[[]db.User]
 	err = surrealdb.Unmarshal(resp, &userData)
 	if err != nil {
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to get user data",
-		})
+		return err
 	}
 
 	if len(userData) == 0 || len(userData[0].Result) == 0 {
-		c.Status(401)
-		return c.JSON(fiber.Map{
+		return c.Status(401).JSON(fiber.Map{
 			"status":  401,
 			"message": "Unauthorized",
 			"info":    "The username or password is incorrect",
@@ -75,22 +62,12 @@ func Login(c *fiber.Ctx) error {
 			"ip_address": c.IP(),
 		})
 	if err != nil {
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to create session",
-		})
+		return err
 	}
 	var sessionData []surrealdb.RawQuery[[]db.Session]
 	err = surrealdb.Unmarshal(resp, &sessionData)
 	if err != nil {
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to create session",
-		})
+		return err
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -98,16 +75,10 @@ func Login(c *fiber.Ctx) error {
 	})
 	signedToken, err := token.SignedString([]byte(os.Getenv("JWTSecret")))
 	if err != nil {
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to sign JsonWebToken",
-		})
+		return err
 	}
 
-	c.Status(200)
-	return c.JSON(fiber.Map{
+	return c.Status(200).JSON(fiber.Map{
 		"status":  200,
 		"message": "OK",
 		"data": fiber.Map{

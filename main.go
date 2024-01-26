@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"log"
+	"os"
 
 	"openrsacloud/backend/db"
 	"openrsacloud/backend/middlewares"
@@ -18,18 +20,38 @@ func main() {
 		log.Println(err.Error())
 	}
 
+	if _, ok := os.LookupEnv("BasePath"); !ok {
+		panic("BasePath enviornmnet variable is not set")
+	}
+	if _, ok := os.LookupEnv("JWTSecret"); !ok {
+		panic("JWTSecret enviornmnet variable is not set")
+	}
+
 	db.Connect()
 
 	app := fiber.New(fiber.Config{
-		Prefork:      true,
-		ServerHeader: "GoFiber",
-		BodyLimit:    -1,
-		AppName:      "OpenRSACloud_backend",
+		Prefork:           true,
+		BodyLimit:         1099511627776,
+		StreamRequestBody: true,
+		AppName:           "OpenRSACloud_backend",
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			var e *fiber.Error
+			if errors.As(err, &e) {
+				return c.Status(e.Code).JSON(fiber.Map{
+					"status":  e.Code,
+					"message": e.Message,
+				})
+			}
+			return c.Status(500).JSON(fiber.Map{
+				"status":  500,
+				"message": "Internal Server Error",
+				"info":    err.Error(),
+			})
+		},
 	})
 	app.Use(logger.New(logger.ConfigDefault))
 
 	api := app.Group("/api")
-
 	api.Get("/", func(c *fiber.Ctx) error {
 		c.Status(200)
 		return c.JSON(fiber.Map{
@@ -55,5 +77,6 @@ func initRoutes(r fiber.Router) {
 	auth.Post("/clear_sessions", middlewares.NeedSession, routes.ClearSessions)
 	auth.Post("/remove_session", middlewares.NeedSession, routes.RemoveSession)
 
-	// files := r.Group("/files")
+	files := r.Group("/files")
+	files.Post("/upload", middlewares.NeedSession, routes.UploadFile)
 }

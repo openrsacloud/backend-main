@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"log"
 	"openrsacloud/backend/db"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,23 +15,12 @@ func GetSessions(c *fiber.Ctx) error {
 			"user": sessionData.User,
 		})
 	if err != nil {
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to get sessions",
-		})
+		return err
 	}
 	var allUserSessions []surrealdb.RawQuery[[]db.Session]
 	err = surrealdb.Unmarshal(resp, &allUserSessions)
 	if err != nil {
-		log.Println(err)
-		c.Status(500)
-		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Internal server error",
-			"info":    "Failed to parse sessions",
-		})
+		return err
 	}
 	c.Status(200)
 	return c.JSON(fiber.Map{
