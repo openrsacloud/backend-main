@@ -3,6 +3,7 @@ package db
 type User struct {
 	Id       string `json:"id"`
 	UserName string `json:"username"`
+	Admin    bool   `json:"admin"`
 }
 
 type Session struct {

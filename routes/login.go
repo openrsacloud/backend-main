@@ -63,8 +63,6 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// delete(userData[0].Result[0], "password")
-
 	resp, err = db.DB.Query(`
 		CREATE sessions SET
 		user = $user,

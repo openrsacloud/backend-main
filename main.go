@@ -19,7 +19,6 @@ func main() {
 	}
 
 	db.Connect()
-	defer db.Disconnect()
 
 	app := fiber.New(fiber.Config{
 		Prefork:      true,
@@ -43,11 +42,18 @@ func main() {
 	initRoutes(api)
 
 	app.Listen("0.0.0.0:3250")
+
+	defer app.ShutdownWithTimeout(2000)
+	defer db.Disconnect()
 }
 
 func initRoutes(r fiber.Router) {
 	auth := r.Group("/auth")
 	auth.Post("/login", routes.Login)
+	auth.Get("/get_user", middlewares.NeedSession, routes.GetAccount)
 	auth.Get("/get_sessions", middlewares.NeedSession, routes.GetSessions)
-	auth.Get("/clear_sessions", middlewares.NeedSession, routes.ClearSessions)
+	auth.Post("/clear_sessions", middlewares.NeedSession, routes.ClearSessions)
+	auth.Post("/remove_session", middlewares.NeedSession, routes.RemoveSession)
+
+	// files := r.Group("/files")
 }

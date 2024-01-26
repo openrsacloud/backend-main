@@ -7,12 +7,9 @@ import (
 )
 
 func ClearSessions(c *fiber.Ctx) error {
-	sessionData := c.Locals("session")
-	if sessionData == nil {
-		return nil
-	}
+	sessionData := c.Locals("session").(db.Session)
 	_, err := db.DB.Query("DELETE sessions WHERE user = $user", fiber.Map{
-		"user": sessionData.(db.Session).User,
+		"user": sessionData.User,
 	})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{

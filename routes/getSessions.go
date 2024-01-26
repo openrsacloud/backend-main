@@ -9,14 +9,11 @@ import (
 )
 
 func GetSessions(c *fiber.Ctx) error {
-	sessionData := c.Locals("session")
-	if sessionData == nil {
-		return nil
-	}
+	sessionData := c.Locals("session").(db.Session)
 	resp, err := db.DB.Query(
 		`SELECT * FROM sessions WHERE user = $user`,
 		map[string]interface{}{
-			"user": sessionData.(db.Session).User,
+			"user": sessionData.User,
 		})
 	if err != nil {
 		c.Status(500)
