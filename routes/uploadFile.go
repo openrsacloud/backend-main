@@ -2,7 +2,6 @@ package routes
 
 import (
 	"io"
-	"log"
 	"openrsacloud/backend/db"
 	"os"
 
@@ -23,7 +22,7 @@ func UploadFile(c *fiber.Ctx) error {
 	}
 
 	_newFileOptions := fiber.Map{
-		"name":  c.FormValue("filename"),
+		"name":  c.FormValue("filename", file.Filename),
 		"owner": sessionData.User,
 		"size":  file.Size,
 		"type":  file.Header.Get("Content-Type"),
@@ -36,14 +35,11 @@ func UploadFile(c *fiber.Ctx) error {
 		return err
 	}
 
-	log.Println(resp)
-
 	var fileData []db.File
 	err = surrealdb.Unmarshal(resp, &fileData)
 	if err != nil {
 		return err
 	}
-	log.Println(fileData)
 
 	src, err := file.Open()
 	if err != nil {
