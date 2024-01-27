@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"log"
 	"openrsacloud/backend/db"
 
 	"github.com/gofiber/fiber/v2"
@@ -55,7 +54,7 @@ func GetFolder(c *fiber.Ctx) error {
 			},
 		})
 	} else {
-		log.Println(sessionData.User)
+
 		resp, err := db.DB.Query(`
 		SELECT * FROM files WHERE parent = NONE AND owner = $user;
 		SELECT * FROM folders WHERE parent = NONE AND owner = $user;
@@ -65,7 +64,6 @@ func GetFolder(c *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		log.Println(resp)
 
 		var folderItems []surrealdb.RawQuery[[]interface{}]
 		err = surrealdb.Unmarshal(resp, &folderItems)
