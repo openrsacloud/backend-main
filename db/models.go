@@ -34,3 +34,10 @@ type Folder struct {
 	Created  string `json:"created"`
 	Modified string `json:"modified"`
 }
+
+type Share struct {
+	Id         string   `json:"id"`
+	Owner      string   `json:"owner"`
+	Recipients []string `json:"recipients"`
+	Object     string   `json:"object"`
+}

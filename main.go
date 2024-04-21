@@ -80,4 +80,5 @@ func initRoutes(r fiber.Router) {
 	files := r.Group("/files")
 	files.Post("/upload", middlewares.NeedSession, routes.UploadFile)
 	files.Get("/get_folder/:id?", middlewares.NeedSession, routes.GetFolder)
+	files.Get("/get_file/:id", routes.GetFile)
 }
