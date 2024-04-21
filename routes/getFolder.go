@@ -48,7 +48,7 @@ func GetFolder(c *fiber.Ctx) error {
 			"status":  200,
 			"message": "OK",
 			"data": fiber.Map{
-				"info":    folderData,
+				"parent":  folderData,
 				"files":   folderItems[0].Result,
 				"folders": folderItems[1].Result,
 			},

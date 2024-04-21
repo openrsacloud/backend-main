@@ -80,7 +80,7 @@ Example response:
 			"status":  200,
 			"message": "OK",
 			"data": {
-				?"info":   Folder,
+				?"parent":   Folder,
 				"files":   []File,
 				"folders": []Folder
 			}
