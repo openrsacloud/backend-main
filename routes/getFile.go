@@ -34,7 +34,10 @@ func GetFile(c *fiber.Ctx) error {
 		return err
 	}
 	if len(shareData[0].Result) == 0 || len(shareData[0].Result[0].Recipients) != 0 {
-		middlewares.NeedSession(c)
+		err = middlewares.NeedSession(c)
+		if err != nil {
+			return err
+		}
 		sessionData := c.Locals("session").(db.Session)
 		if sessionData.User != fileData.Owner && !slices.Contains(shareData[0].Result[0].Recipients, sessionData.User) {
 			return c.Status(401).JSON(fiber.Map{
