@@ -51,7 +51,7 @@ func UploadFile(c *fiber.Ctx) error {
 	}
 	defer src.Close()
 
-	destination, err := os.Create(os.Getenv("BasePath") + fileData[0].Id[7:])
+	destination, err := os.Create(os.Getenv("BasePath") + fileData[0].Id[6:])
 	if err != nil {
 		return err
 	}
