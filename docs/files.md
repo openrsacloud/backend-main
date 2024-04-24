@@ -71,9 +71,9 @@ Example response:
 		}
 	 ```
 
- - `GET /api/files/folder/:id?`
+ - `GET /api/files/get_folder/:id?`
 	- Authentication required: **Bearer \<TOKEN>**
-	- id parameter is optional (ex. folders:ID), if not ptovided, it returns the user's home directory
+	- id parameter is optional, if not ptovided, it returns the user's home directory
 	- Example response:
 	 ```
 		{
@@ -87,3 +87,6 @@ Example response:
 		}
 	 ```
 
+	- `GET /api/files/get_file/:id`
+	- Authentication is optional: **Bearer \<TOKEN>**
+	- id parameter required
