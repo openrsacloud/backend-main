@@ -83,7 +83,8 @@ func initRoutes(r fiber.Router) {
 	files.Get("/get_file/:id", routes.GetFile)
 
 	shares := r.Group("/share")
-	// shares.Post("/create_share", middlewares.NeedSession, routes.CreateShare)
-	// shares.Get("/remove_share", middlewares.NeedSession, routes.RemoveShare)
+	shares.Post("/create_share", middlewares.NeedSession, routes.CreateShare)
+	shares.Post("/remove_share", middlewares.NeedSession, routes.RemoveShare)
+	shares.Post("/update_share", middlewares.NeedSession, routes.UpdateShare)
 	shares.Get("/:id", routes.GetShare)
 }
