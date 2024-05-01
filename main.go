@@ -10,6 +10,7 @@ import (
 	"openrsacloud/backend/routes"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
@@ -49,6 +50,7 @@ func main() {
 			})
 		},
 	})
+	app.Use(cors.New())
 	app.Use(logger.New(logger.ConfigDefault))
 
 	api := app.Group("/api")
@@ -72,6 +74,7 @@ func main() {
 func initRoutes(r fiber.Router) {
 	auth := r.Group("/auth")
 	auth.Post("/login", routes.Login)
+	auth.Get("/create_user", middlewares.NeedSession, routes.CreateUser)
 	auth.Get("/get_user", middlewares.NeedSession, routes.GetAccount)
 	auth.Get("/get_sessions", middlewares.NeedSession, routes.GetSessions)
 	auth.Post("/clear_sessions", middlewares.NeedSession, routes.ClearSessions)
@@ -79,8 +82,9 @@ func initRoutes(r fiber.Router) {
 
 	files := r.Group("/files")
 	files.Post("/upload", middlewares.NeedSession, routes.UploadFile)
-	files.Get("/get_folder/:id?", middlewares.NeedSession, routes.GetFolder)
 	files.Get("/get_file/:id", routes.GetFile)
+	files.Post("/create_folder", middlewares.NeedSession, routes.CreateFolder)
+	files.Get("/get_folder/:id?", middlewares.NeedSession, routes.GetFolder)
 
 	shares := r.Group("/share")
 	shares.Post("/create_share", middlewares.NeedSession, routes.CreateShare)
