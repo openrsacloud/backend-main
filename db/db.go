@@ -9,7 +9,7 @@ import (
 var DB *surrealdb.DB
 
 func Connect() {
-	db, err := surrealdb.New("ws://truenas.local:30888/rpc")
+	db, err := surrealdb.New(os.Getenv("SurrealDatabaseURL"))
 	if err != nil {
 		panic(err)
 	}
