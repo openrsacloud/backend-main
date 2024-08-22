@@ -6,7 +6,7 @@ services:
       - "3250:3250"
     volumes:
       - ./data:/app/data/
-    enviornment:
+    environment:
       SurrealDatabaseURL=ws://sdb:8000/rpc
       SurrealDatabaseUser=root
       SurrealDatabasePass=root
