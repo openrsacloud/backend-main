@@ -1,0 +1,24 @@
+services:
+  backend:
+    depends_on: sdb
+    build: .
+    ports:
+      - "3250:3250"
+    volumes:
+      - ./data:/app/data/
+    enviornment:
+      SurrealDatabaseURL=ws://sdb:8000/rpc
+      SurrealDatabaseUser=root
+      SurrealDatabasePass=root
+      SurrealDatabaseNamespace=OpenRSACloud
+      JWTSecret=verysecure
+      BasePath=/app/data/files/
+    restart: unless-stopped
+  sdb:
+    image: surrealdb/surrealdb:latest
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    volumes:
+      - ./data:/mydata
+    command: start --user root --pass root file:/mydata/surreal.db
