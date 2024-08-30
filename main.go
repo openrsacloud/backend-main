@@ -90,5 +90,6 @@ func initRoutes(r fiber.Router) {
 	shares.Post("/create_share", middlewares.NeedSession, routes.CreateShare)
 	shares.Post("/remove_share", middlewares.NeedSession, routes.RemoveShare)
 	shares.Post("/update_share", middlewares.NeedSession, routes.UpdateShare)
+	shares.Get("/shared_with_me", middlewares.NeedSession, routes.SharedWithMe)
 	shares.Get("/:id", routes.GetShare)
 }

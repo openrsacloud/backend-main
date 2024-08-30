@@ -90,4 +90,14 @@ Example response:
 			"data":    Share
 		}
 	 ```
- 
+
+ - `GET /api/share/shared_with_me` 
+ 	- Authentication required: **Bearer \<TOKEN>**
+	- Example response:
+	 ```
+		{
+			"status":  200,
+			"message": "OK",
+			"data":    []Share
+		}
+	 ```
