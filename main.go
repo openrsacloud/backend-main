@@ -65,10 +65,9 @@ func main() {
 
 	initRoutes(api)
 
-	app.Listen("0.0.0.0:3250")
-
-	defer app.ShutdownWithTimeout(2000)
-	defer db.Disconnect()
+	if err := app.Listen("0.0.0.0:3250"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func initRoutes(r fiber.Router) {
