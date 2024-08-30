@@ -10,8 +10,16 @@ import (
 )
 
 func NeedSession(c *fiber.Ctx) error {
-	tokenString := c.Get("Authorization")[7:]
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+	tokenString := c.Get("Authorization")
+	if len(tokenString) < 10 {
+		c.Locals("session", nil)
+		return c.Status(401).JSON(fiber.Map{
+			"status":  401,
+			"message": "Unauthorized",
+			"info":    "Invalid token",
+		})
+	}
+	token, err := jwt.Parse(tokenString[7:], func(t *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWTSecret")), nil
 	})
 	if err != nil {
