@@ -9,16 +9,23 @@ import (
 
 func UpdateShare(c *fiber.Ctx) error {
 	sessionData := c.Locals("session").(db.Session)
-	var body map[string]string
+	var body struct {
+		Recipients []string `json:"recipients"`
+		Id         string   `json:"id"`
+	}
 	err := c.BodyParser(&body)
 	if err != nil {
-		return err
+		return c.Status(422).JSON(fiber.Map{
+			"status":  422,
+			"message": "Unprocessable entity",
+			"info":    "Invalid body provided.",
+		})
 	}
 
 	resp, err := db.DB.Query("UPDATE $share SET recipients = $recipients WHERE owner = $user", fiber.Map{
 		"user":       sessionData.User,
-		"share":      body["id"],
-		"recipients": body["recipients"],
+		"share":      body.Id,
+		"recipients": body.Recipients,
 	})
 	if err != nil {
 		return err

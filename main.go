@@ -73,11 +73,11 @@ func main() {
 func initRoutes(r fiber.Router) {
 	auth := r.Group("/auth")
 	auth.Post("/login", routes.Login)
-	auth.Get("/create_user", middlewares.NeedSession, routes.CreateUser)
-	auth.Get("/get_user", middlewares.NeedSession, routes.GetAccount)
+	auth.Get("/get_user", middlewares.NeedSession, routes.GetUser)
 	auth.Get("/get_sessions", middlewares.NeedSession, routes.GetSessions)
 	auth.Post("/clear_sessions", middlewares.NeedSession, routes.ClearSessions)
 	auth.Post("/remove_session", middlewares.NeedSession, routes.RemoveSession)
+	auth.Post("/remove_user", middlewares.NeedSession, routes.RemoveUser)
 
 	files := r.Group("/files")
 	files.Post("/upload", middlewares.NeedSession, routes.UploadFile)
@@ -91,4 +91,9 @@ func initRoutes(r fiber.Router) {
 	shares.Post("/update_share", middlewares.NeedSession, routes.UpdateShare)
 	shares.Get("/shared_with_me", middlewares.NeedSession, routes.SharedWithMe)
 	shares.Get("/:id", routes.GetShare)
+
+	admin := r.Group("/admin")
+	admin.Get("/get_users", middlewares.NeedSession, routes.GetUsers)
+	admin.Post("/create_user", middlewares.NeedSession, routes.CreateUser)
+
 }

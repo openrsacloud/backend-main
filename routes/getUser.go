@@ -7,7 +7,7 @@ import (
 	"github.com/surrealdb/surrealdb.go"
 )
 
-func GetAccount(c *fiber.Ctx) error {
+func GetUser(c *fiber.Ctx) error {
 	sessionData := c.Locals("session").(db.Session)
 	resp, err := db.DB.Select(sessionData.User)
 	if err != nil {
