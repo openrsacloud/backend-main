@@ -10,7 +10,7 @@ import (
 func RemoveUser(c *fiber.Ctx) error {
 	sessionData := c.Locals("session").(db.Session)
 	var body struct {
-		UserId string `json:"user_id"`
+		Password string `json:"password"`
 	}
 	err := c.BodyParser(&body)
 	if err != nil {
@@ -21,25 +21,31 @@ func RemoveUser(c *fiber.Ctx) error {
 		})
 	}
 
-	resp, err := db.DB.Select(sessionData.User)
+	resp, err := db.DB.Query(`
+		SELECT * FROM users WHERE id = $uid 
+		AND crypto::argon2::compare(password, $password);`,
+		fiber.Map{
+			"uid":      sessionData.User,
+			"password": body.Password,
+		})
 	if err != nil {
 		return err
 	}
-	var userData db.User
-	err = surrealdb.Unmarshal(resp, userData)
+	var userData []surrealdb.RawQuery[[]db.User]
+	err = surrealdb.Unmarshal(resp, &userData)
 	if err != nil {
 		return err
 	}
 
-	if !userData.Admin || body.UserId == sessionData.User {
+	if len(userData) == 0 || len(userData[0].Result) == 0 {
 		return c.Status(401).JSON(fiber.Map{
 			"status":  401,
 			"message": "Unauthorized",
-			"info":    "You cannot remove this user!",
+			"info":    "The password is incorrect",
 		})
 	}
 
-	_, err = db.DB.Delete(body.UserId)
+	_, err = db.DB.Delete(sessionData.User)
 	if err != nil {
 		return err
 	}

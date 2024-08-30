@@ -86,10 +86,11 @@ Example response:
 
 ### `POST /api/auth/remove_user`
 - Authentication required: **Bearer \<TOKEN>**
+- Password confirmation required
 - Request body:
 	```
 	{
-		"user_id": string
+		"password": string
 	}
 	```
 - Example response:
