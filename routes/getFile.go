@@ -5,6 +5,7 @@ import (
 	"openrsacloud/backend/middlewares"
 	"os"
 	"slices"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/surrealdb/surrealdb.go"
@@ -12,7 +13,14 @@ import (
 
 func GetFile(c *fiber.Ctx) error {
 	fileId := c.Params("id")
-	resp, err := db.DB.Select("files:" + fileId)
+	if !strings.HasPrefix(fileId, "files:") {
+		return c.Status(401).JSON(fiber.Map{
+			"status":  400,
+			"message": "Bad request",
+			"info":    "Invalid file ID",
+		})
+	}
+	resp, err := db.DB.Select(fileId)
 	if err != nil {
 		return err
 	}

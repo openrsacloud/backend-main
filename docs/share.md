@@ -18,6 +18,7 @@ Example response:
 ## Endpoints
 ### `GET /api/share/:id` 
 - Authentication is optional: **Bearer \<TOKEN>**
+- example id: `shares:6ayyokw3vbcwbovzoqde`
 - Example response:
 	```
 	{

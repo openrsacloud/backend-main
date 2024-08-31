@@ -2,6 +2,7 @@ package routes
 
 import (
 	"openrsacloud/backend/db"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/surrealdb/surrealdb.go"
@@ -10,7 +11,13 @@ import (
 func GetFolder(c *fiber.Ctx) error {
 	sessionData := c.Locals("session").(db.Session)
 	folderId := c.Params("id")
-
+	if !strings.HasPrefix(folderId, "folders:") {
+		return c.Status(401).JSON(fiber.Map{
+			"status":  400,
+			"message": "Bad request",
+			"info":    "Invalid folder ID",
+		})
+	}
 	if folderId != "" {
 		resp, err := db.DB.Select(folderId)
 		if err != nil {

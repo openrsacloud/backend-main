@@ -73,14 +73,16 @@ Example response:
 	}
 	```
 
-### `GET /api/auth/get_user`
+### `GET /api/auth/get_user/:id?`
 - Authentication required: **Bearer \<TOKEN>**
+- `id` parameter is optional, if not provided it returns the authenticated user
+- example id: `users:6ayyokw3vbcwbovzoqde`
 - Example response:
 	```
 	{
 		"status":  200,
 		"message": "OK",
-		"data":    []User
+		"data":    User
 	}
 	```
 
